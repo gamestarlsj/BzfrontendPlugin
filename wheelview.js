@@ -1,9 +1,14 @@
+//作者：56
+//如果有不明白的请联系QQ675231249
+
 $(function($){
 
     $.fn.wheelView = function(options) {
         var _self = $(this);
         var startTouch,endTouch = {};
         var timeCount = 0,Tinterval;
+        var currTop;
+        var startx,starty;
         var defaults = {
             position : "middle",
 
@@ -27,7 +32,7 @@ $(function($){
                     touchStart(event,$(this));
                 })
 
-                $(this).bind("touchMove", function (event) {
+                $(this).bind("touchmove", function (event) {
                     touchMove(event,$(this));
                 })
 
@@ -49,6 +54,9 @@ $(function($){
 
             var startX = e.originalEvent.touches[0].clientX;
             var startY = e.originalEvent.touches[0].clientY;
+            starty = startY;
+            currTop = _self.find("li").css("top")
+            console.log(currTop);
             startTouch = {
                 x : startX,
                 y : startY
@@ -58,7 +66,8 @@ $(function($){
         function touchMove(e,_self){
             e.preventDefault()
             var changedX = e.originalEvent.changedTouches[0].clientX;
-            var changedY = e.originalEvent.changedTouches[0].clientY;
+            var changedY = e.originalEvent.touches[0].clientY;
+            fingermove(changedX,changedY,_self);
         }
 
         function touchEnd(e,_self){
@@ -90,18 +99,53 @@ $(function($){
             timeCount = 0;
         }
 
+        function fingermove(x,y,_self){
+            changedY = parseInt(starty) - parseInt(y);
+
+            //console.log(starty)
+            console.log(changedY)
+            //console.log(y)
+
+            ctop = -parseInt(currTop) + parseInt(changedY);
+
+           // console.log(currTop)
+
+            _self.find("li").css("top", - ctop );
+
+            //positionModifer(ctop)
+
+        }
+
+        //路径换算成整数倍
         function speedjudge(swR,swD,T,_self){
             var currSpeed = swD/T;
-           // alert(currSpeed)
             var a = currSpeed/T;
-            var s = 0.5*a*T*T*3;
-            //alert(s)
+            var s = Math.ceil(0.5*a*T*T*3);
 
-            _self.find("li").animate({ top: "-="+s },{
-                easing: 'easeOutBack',
-                duration: 1000,
-                complete: ''
-            });
+
+            while (s != 0){
+                if(s % 55 == 0){
+                    break;
+                }else{
+                    s++;
+                }
+            }
+
+            if(swR == "down"){
+                _self.find("li").animate({ top: "+="+s },{
+                    easing: 'easeOutQuint',
+                    duration: 1000,
+                    complete: ''
+                });
+            }else if(swR == "up"){
+                _self.find("li").animate({ top: "-="+s },{
+                    easing: 'easeOutQuint',
+                    duration: 1000,
+                    complete: ''
+                });
+            }
+
+
 
         }
 
