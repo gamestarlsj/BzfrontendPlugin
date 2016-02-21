@@ -7,16 +7,19 @@ $(function($){
         var _self = $(this);
         var startTouch,endTouch = {};
         var timeCount = 0,Tinterval;
-        var currTop;
+        var startTop;
+        var endTop;
+        var lastTop;
         var startx,starty;
+        var defaultTop = 55*2;
+
         var defaults = {
             position : "middle",
-
-
             initialize : function(){
                 drawframe();
             }
         }
+
         var settings = $.extend({},defaults, options);
         function drawframe(){
             if(settings.position == "middle"){
@@ -48,6 +51,10 @@ $(function($){
         function touchStart(e,_self){
             e.preventDefault();
 
+            var liNum = _self.find("li").length;
+            lastTop = (-55 * liNum) + 165;
+
+            Runningflag = true;
             Tinterval = setInterval(function(){
                 timeCount += 0.01;
             },1)
@@ -55,8 +62,8 @@ $(function($){
             var startX = e.originalEvent.touches[0].clientX;
             var startY = e.originalEvent.touches[0].clientY;
             starty = startY;
-            currTop = _self.find("li").css("top")
-            console.log(currTop);
+            startTop = _self.find("li").css("top")
+            startTop = ToptoNum(startTop);
             startTouch = {
                 x : startX,
                 y : startY
@@ -66,7 +73,7 @@ $(function($){
         function touchMove(e,_self){
             e.preventDefault()
             var changedX = e.originalEvent.changedTouches[0].clientX;
-            var changedY = e.originalEvent.touches[0].clientY;
+            var changedY = e.originalEvent.changedTouches[0].clientY;
             fingermove(changedX,changedY,_self);
         }
 
@@ -94,59 +101,100 @@ $(function($){
             }
 
             clearInterval(Tinterval);
-            //alert(timeCount);
+            endTop = _self.find("li").css("top");
+
             speedjudge(swipeResult,swipeData,timeCount,_self)
             timeCount = 0;
         }
 
         function fingermove(x,y,_self){
-            changedY = parseInt(starty) - parseInt(y);
+            var changedY = parseInt(starty) - parseInt(y);
 
-            //console.log(starty)
-            console.log(changedY)
-            //console.log(y)
+            ctop = parseInt(startTop) - parseInt(changedY);
 
-            ctop = -parseInt(currTop) + parseInt(changedY);
-
-           // console.log(currTop)
-
-            _self.find("li").css("top", - ctop );
-
-            //positionModifer(ctop)
+            _self.find("li").css("top", ctop );
 
         }
 
         //路径换算成整数倍
         function speedjudge(swR,swD,T,_self){
-            var currSpeed = swD/T;
-            var a = currSpeed/T;
-            var s = Math.ceil(0.5*a*T*T*3);
 
-
-            while (s != 0){
-                if(s % 55 == 0){
-                    break;
-                }else{
-                    s++;
+            //判定直接选择不需要滑动
+            if(T >= 0.7){
+                endTop = ToptoNum(endTop);
+                endTop = positionModifer(endTop);
+                if(swR == "down"){
+                    //有-说明已经位置在最上方
+                    if(endTop > 0){
+                        swipeanimate(defaultTop,_self);
+                        return
+                    }else{
+                        swipeanimate(positionModifer(endTop),_self);
+                        return
+                    }
+                }else if(swR == "up"){
+                    if(endTop <= lastTop){
+                        swipeanimate(lastTop,_self);
+                        return
+                    }else{
+                        swipeanimate(endTop,_self);
+                        return
+                    }
+                }
+            }else{
+                var currSpeed = swD/T;
+                var a = currSpeed/T;
+                var s = Math.ceil(0.5*a*T*T);
+                endTop = ToptoNum(endTop);
+                s = positionModifer(s);
+                if(swR == "down"){
+                    //有-说明已经位置在最上方
+                    if(endTop > defaultTop){
+                        swipeanimate(defaultTop,_self);
+                        return
+                    }else{
+                        var num = endTop - s;
+                        swipeanimate(positionModifer(num),_self);
+                        return
+                    }
+                }else if(swR == "up"){
+                    if(endTop <= lastTop){
+                        swipeanimate(positionModifer(lastTop),_self);
+                        return
+                    }else{
+                        swipeanimate(positionModifer(endTop),_self);
+                        return
+                    }
                 }
             }
+        }
 
-            if(swR == "down"){
-                _self.find("li").animate({ top: "+="+s },{
-                    easing: 'easeOutQuint',
-                    duration: 1000,
-                    complete: ''
-                });
-            }else if(swR == "up"){
-                _self.find("li").animate({ top: "-="+s },{
-                    easing: 'easeOutQuint',
-                    duration: 1000,
-                    complete: ''
-                });
-            }
+        function ToptoNum(currTop){
+            currTop = parseInt(currTop.replace("px",""));
+            return currTop;
+        }
+        function positionModifer(num){
+                console.log(num % 55)
+                if(num % 55 == 0){
+                    return num;
+                }else{
+                    var minute = num % 55;
+                    if(minute < -28){
+                        num -= (55 + minute)
+                    }else{
+                        num -= minute;
+                    }
 
+                    return num;
+                }
+        }
 
-
+        function swipeanimate(Top,_self){
+            _self.find("li").animate({ top: Top },{
+                easing: 'easeOutQuint',
+                duration: 300,
+                complete: ''
+            })
         }
 
         return settings.initialize()
