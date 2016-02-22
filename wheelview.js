@@ -12,6 +12,7 @@ $(function($){
         var lastTop;
         var startx,starty;
         var defaultTop = 55*2;
+        var runningflag = false;
 
         var defaults = {
             position : "middle",
@@ -25,21 +26,22 @@ $(function($){
             if(settings.position == "middle"){
                 _self.addClass("wheelView_center");
             }
+
             $(".wheelFirst").append(settings.Firstli);
             $(".wheelSecond").append(settings.Secondndli);
             $(".wheelThird").append(settings.Thirdli);
 
             $(".wheelContainer ul").each(function(index,ele){
 
-                $(this).bind("touchstart", function (event) {
+                $(this).bind("touchstart click", function (event) {
                     touchStart(event,$(this));
                 })
 
-                $(this).bind("touchmove", function (event) {
+                $(this).bind("touchmove mousemove", function (event) {
                     touchMove(event,$(this));
                 })
 
-                $(this).bind("touchend", function(event) {
+                $(this).bind("touchend mouseup", function(event) {
                     touchEnd(event,$(this))
                 })
 
@@ -59,8 +61,13 @@ $(function($){
                 timeCount += 0.01;
             },1)
 
-            var startX = e.originalEvent.touches[0].clientX;
-            var startY = e.originalEvent.touches[0].clientY;
+            if(e.originalEvent.type == "click"){
+                var startX = e.originalEvent.clientX;
+                var startY = e.originalEvent.clientY;
+            }else{
+                var startX = e.originalEvent.touches[0].clientX;
+                var startY = e.originalEvent.touches[0].clientY;
+            }
             starty = startY;
             startTop = _self.find("li").css("top")
             startTop = ToptoNum(startTop);
@@ -71,9 +78,15 @@ $(function($){
         }
 
         function touchMove(e,_self){
-            e.preventDefault()
-            var changedX = e.originalEvent.changedTouches[0].clientX;
-            var changedY = e.originalEvent.changedTouches[0].clientY;
+            e.preventDefault();
+
+            if(e.originalEvent.type == "mousemove"){
+                var changedX = e.originalEvent.clientX;
+                var changedY = e.originalEvent.clientY;
+            }else{
+                var changedX = e.originalEvent.changedTouches[0].clientX;
+                var changedY = e.originalEvent.changedTouches[0].clientY;
+            }
             fingermove(changedX,changedY,_self);
         }
 
@@ -83,19 +96,24 @@ $(function($){
             var swipeData;
             var result = [];
 
-            var endX = e.originalEvent.changedTouches[0].clientX;
-            var endY = e.originalEvent.changedTouches[0].clientY;
+            if(e.originalEvent.type == "mouseup"){
+                var endX = e.originalEvent.clientX;
+                var endY = e.originalEvent.clientY;
+            }else{
+                var endX = e.originalEvent.changedTouches[0].clientX;
+                var endY = e.originalEvent.changedTouches[0].clientY;
+            }
             endTouch = {
                 x : endX,
                 y : endY
             };
 
             if(endTouch.y > startTouch.y){
-               // resultarr.push("down");
+                // resultarr.push("down");
                 swipeResult = "down";
                 swipeData = endTouch.y - startTouch.y;
             }else if(endTouch.y < startTouch.y){
-               // resultarr.push("up");
+                // resultarr.push("up");
                 swipeResult = "up";
                 swipeData = startTouch.y - endTouch.y;
             }
@@ -125,7 +143,7 @@ $(function($){
                 endTop = positionModifer(endTop);
                 if(swR == "down"){
                     //有-说明已经位置在最上方
-                    if(endTop > 0){
+                    if(endTop > defaultTop){
                         swipeanimate(defaultTop,_self);
                         return
                     }else{
@@ -144,17 +162,19 @@ $(function($){
             }else{
                 var currSpeed = swD/T;
                 var a = currSpeed/T;
-                var s = Math.ceil(0.5*a*T*T);
+                var s = Math.ceil(0.5*a*T*T*3);
                 endTop = ToptoNum(endTop);
                 s = positionModifer(s);
+                var duration  = 1000;
                 if(swR == "down"){
                     //有-说明已经位置在最上方
                     if(endTop > defaultTop){
                         swipeanimate(defaultTop,_self);
                         return
                     }else{
-                        var num = endTop - s;
-                        swipeanimate(positionModifer(num),_self);
+                        var num = parseInt(endTop) + parseInt(s);
+                        if(num > defaultTop) {swipeanimate(defaultTop,_self)}
+                        else swipeanimate(positionModifer(num),_self);
                         return
                     }
                 }else if(swR == "up"){
@@ -174,26 +194,28 @@ $(function($){
             return currTop;
         }
         function positionModifer(num){
-                console.log(num % 55)
-                if(num % 55 == 0){
-                    return num;
-                }else{
-                    var minute = num % 55;
-                    if(minute < -28){
-                        num -= (55 + minute)
-                    }else{
-                        num -= minute;
-                    }
 
-                    return num;
+            if(num % 55 == 0){
+                return num;
+            }else{
+                var minute = num % 55;
+                if(minute < -28){
+                    num -= (55 + minute)
+                }else{
+                    num -= minute;
                 }
+
+                return num;
+            }
         }
 
-        function swipeanimate(Top,_self){
+        function swipeanimate(Top,_self,duration){
             _self.find("li").animate({ top: Top },{
                 easing: 'easeOutQuint',
-                duration: 300,
-                complete: ''
+                duration:300,
+                complete: function(){
+                    runningflag = false;
+                }
             })
         }
 
