@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="customInput.css">
+    <script src="jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <div id="com_input_container1" class="com_input_container"></div>
+    <div id="com_input_container2" class="com_input_container"></div>
+    <div id="com_input_container3" class="com_input_container"></div>
+
+
+</body>
+
+<script>
+    (function($) {
+        $.fn.BzwapInput = function(options,callback) {
+            var _self = $(this);
+            var defaults = {
+                width:400,
+                height:100,
+                //自适应宽度
+                adaptation:false,
+                labelText:"label",
+                //自适应宽度百分比
+                adaptwidth:100,
+                type:'text',
+                placeholder:'请输入内容',
+                maxlength:'',
+                needicon:false,
+                iconUrl:'',
+                iconEvent:function(){
+                    alert("iconEvent")
+                }
+            };
+            var settings = $.extend({},defaults, options);//将一个空对象做为第一个参数
+            if(settings.adaptation){
+                this.css('width',settings.adaptwidth + "%");
+            }else{
+                this.css('width',settings.width)
+            }
+
+            //两种方法
+            function labeladd(){
+                var html = "<label>"+settings.labelText+"" + "\n"
+                + '</label>' + "\n"
+                + '<input class="com_input_text" type='+ settings.type +' placeholder='+ settings.placeholder +' maxlength='+settings.maxlength+'>';
+                return html;
+            }
+
+
+            function iconadd(){
+                if(settings.needicon){
+                    //var html = '<img  class="com_input_control" src='+ settings.iconUrl +' height="30" width="25" />';
+                    var _img = document.createElement('img');
+                    _img.setAttribute("src",settings.iconUrl);
+                    _img.setAttribute("class","com_input_control");
+                    _img.onclick = function(){
+                        settings.iconEvent();
+                    }
+                    _self.append(_img);
+                    //return html;
+                }
+            }
+
+
+            function initial() {
+                _self.append(labeladd());
+                iconadd()
+                //_self.append(iconadd());
+            }
+
+            return initial();
+
+        };
+
+
+        $('#com_input_container1').BzwapInput({
+            labelText: '手机号',
+            placeholder:"请输入手机号",
+            adaptation:true,
+            type:'text'
+        });
+        $('#com_input_container2').BzwapInput({
+            labelText: '姓名',
+            placeholder:"请输入姓名",
+            adaptation:false,
+            type:'text'
+        });
+        $('#com_input_container3').BzwapInput({
+            labelText:"",
+            adaptation:true,
+            adaptwidth: 80,
+            type:'password',
+            needicon:true,
+            iconUrl:'img/eye.png',
+            iconEvent:function(){
+                alert("121212121")
+            }
+        });
+
+    })(jQuery);
+
+</script>
+
+
+</html>

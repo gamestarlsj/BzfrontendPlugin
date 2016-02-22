@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="customInput.css">
+    <script src="jquery.min.js"></script>
+</head>
+<body>
+<style>
+
+</style>
+
+    <div class="BzwapInput" adaptation="false" width="400">
+        <label for="">手机号</label>
+        <input placeholder="请输入手机号"   type="text" class=""/>
+    </div>
+
+    <div class="BzwapInput" adaptation="true" NeedIcon="true" IconUrl="img/eye.png">
+        <label for="">手机号</label>
+        <input placeholder="请输入手机号"  width="100"  type="text" class=""/>
+        <img class="com_input_control" src="" height="30" width="25">
+    </div>
+
+    <div class="BzwapInput" adaptation="true">
+        <label for="">手机号</label>
+        <input placeholder="请输入手机号"   type="text" class=""/>
+    </div>
+
+<script>
+    var divarray = $("div[class=BzwapInput]");
+    $(divarray).each(function (index , ele) {
+        $_self = $(this);
+        var wapInput = $_self.find('input');
+        wapInput.addClass("com_input_text");
+        var currAttr = this.attributes;
+        $(currAttr).each(function (index) {
+            if(currAttr[index].name == "adaptation") {
+                if (currAttr[index].value == "true") {
+                    $_self.addClass("com_input_container")
+                } else {
+                    $_self.addClass("com_input_container_custom");
+                    $_self.css("width",$_self.attr("width"));
+                }
+            }
+
+        })
+
+    })
+
+</script>
+
+
+</body>
+
+
+</html>
