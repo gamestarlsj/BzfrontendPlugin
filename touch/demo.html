@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+    #touchid{
+        margin: auto;
+        width: 500px;
+        height: 500px;
+        border: 1px solid rebeccapurple;
+    }
+</style>
+
+<body>
+
+    <div id="touchid"></div>
+
+    <script src="touch.js"></script>
+    <script>
+
+        var opt = {};
+        opt.left = function(){alert("left")};
+        opt.right = function(){alert("right")};
+        opt.up = function(){alert("up")};
+        opt.down = function(){alert("down")}
+
+        var result = new checkTouch("touchid",opt);
+
+
+    </script>
+
+</body>
+
+</html>
