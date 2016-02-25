@@ -4,7 +4,6 @@
  */
 
 $(function($){
-
     $.fn.loading = function(opt,callback){
         $_self = $(this);
         var value = 0;
@@ -25,8 +24,8 @@ $(function($){
             $_self.append(jinrHtml);
             $_self.css({"height": "100%", "width": "100%", "z-index": 99, "position": "fixed", "top": "0px", "left": "0px", "background": "#d9d9d9"});
             $_self.find('div').css({"height": "147px", "width": "147px"});
-            $_self.find(".loading_contain").css({"background": "url(img/i-4.png) no-repeat top" , "margin": "40% auto 0"});
-            $_self.find(".loading_hide").css({"background": "url(img/i-3.png) top"});
+            $_self.find(".loading_contain").css({"background": "url("+settings.imgUrl.p1+") no-repeat top" , "margin": "40% auto 0"});
+            $_self.find(".loading_hide").css({"background": "url("+settings.imgUrl.p2+") top"});
             $_self.find("#loading_p").css({"text-align":"center","font-size":"24px"});
             RunjinrAction();
         }
@@ -57,8 +56,6 @@ $(function($){
                     settings.afterLoad();
                 }
             }
-
-
         }
 
         RunjinrAction = function(){
@@ -93,8 +90,6 @@ $(function($){
             document.getElementById("loading_hide").style.height = height_p + 'px';
             document.getElementById("loading_p").innerHTML = per + '%';
         }
-
-
 
         initial=function(){
             switch (settings.Module){
