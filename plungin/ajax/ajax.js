@@ -1,7 +1,7 @@
 /*
  * Name: xhr,AJAX封装函数
  * Description: 一个ajax调用封装类,仿jquery的ajax调用方式
- * Author:十年灯
+ * Author:56
  */
 var xhr = function () {
     var
