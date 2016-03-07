@@ -2,6 +2,21 @@
  * Name: xhr,AJAX封装函数
  * Description: 一个ajax调用封装类,仿jquery的ajax调用方式
  * Author:56
+ *var a1 = xhr({
+ *       url:'2.php',
+ *       data:{
+ *           'username':'lix',
+ *           'password':'123456',
+ *           'gender':'male',
+ *           'interset':'play'
+ *       },
+ *       async:false,
+ *       method:'GET',
+ *       success: function  (data) {
+ *           var obj = JSON.parse(data);
+ *           //....
+ *       }
+ *   });
  */
 var xhr = function () {
     var
